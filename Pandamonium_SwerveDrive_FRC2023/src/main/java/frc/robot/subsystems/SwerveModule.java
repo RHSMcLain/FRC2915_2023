@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -50,8 +51,8 @@ public class SwerveModule {
       int[] turningEncoderChannels,
       boolean driveEncoderReversed,
       boolean turningEncoderReversed) {
-    m_driveMotor = new CANSparkMax(driveMotorChannel, null);
-    m_turningMotor = new CANSparkMax(turningMotorChannel, null);
+    m_driveMotor = new CANSparkMax(driveMotorChannel, MotorType.kBrushless);
+    m_turningMotor = new CANSparkMax(turningMotorChannel, MotorType.kBrushless);
 
     m_driveEncoder = new Encoder(driveEncoderChannels[0], driveEncoderChannels[1]);
 
