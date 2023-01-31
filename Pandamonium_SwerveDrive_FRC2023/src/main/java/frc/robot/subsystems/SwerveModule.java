@@ -4,6 +4,9 @@
 
 package frc.robot.subsystems;
 
+import com.revrobotics.Relative
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkMaxRelativeEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
@@ -13,15 +16,15 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.RelativeEncoder;
 import frc.robot.Constants.ModuleConstants;
 
 public class SwerveModule {
   private final CANSparkMax m_driveMotor;
   private final CANSparkMax m_turningMotor;
 
-  private final Encoder m_driveEncoder;
-  private final Encoder m_turningEncoder;
+  private final RelativeEncoder m_driveEncoder;
+  private final RelativeEncoder m_turningEncoder;
 
   private final PIDController m_drivePIDController = new PIDController(ModuleConstants.kPModuleDriveController, 0, 0);
 
@@ -37,26 +40,27 @@ public class SwerveModule {
   /**
    * Constructs a SwerveModule.
    *
-   * @param driveMotorChannel      The channel of the drive motor.
-   * @param turningMotorChannel    The channel of the turning motor.
-   * @param driveEncoderChannels   The channels of the drive encoder.
-   * @param turningEncoderChannels The channels of the turning encoder.
-   * @param driveEncoderReversed   Whether the drive encoder is reversed.
-   * @param turningEncoderReversed Whether the turning encoder is reversed.
+   * @param driveMotorChannel             The channel of the drive motor.
+   * @param turningMotorChannel           The channel of the turning motor.
+   * @param kfrontleftdriveencoderports   The channels of the drive encoder.
+   * @param kfrontleftturningencoderports The channels of the turning encoder.
+   * @param driveEncoderReversed          Whether the drive encoder is reversed.
+   * @param turningEncoderReversed        Whether the turning encoder is reversed.
    */
   public SwerveModule(
       int driveMotorChannel,
       int turningMotorChannel,
-      int[] driveEncoderChannels,
-      int[] turningEncoderChannels,
+      int kfrontleftdriveencoderports,
+      int kfrontleftturningencoderports,
       boolean driveEncoderReversed,
       boolean turningEncoderReversed) {
     m_driveMotor = new CANSparkMax(driveMotorChannel, MotorType.kBrushless);
     m_turningMotor = new CANSparkMax(turningMotorChannel, MotorType.kBrushless);
 
-    m_driveEncoder = new Encoder(driveEncoderChannels[0], driveEncoderChannels[1]);
+    m_driveEncoder = m_driveMotor.getEncoder(SparkMaxRelativeEncoder.Type.kQuadrature, 4096);
 
-    m_turningEncoder = new Encoder(turningEncoderChannels[0], turningEncoderChannels[1]);
+    m_turningEncoder = m_turningMotor.getEncoder(SparkMaxRelativeEncoder.Type.kQuadrature, 4096);
+    ;
 
     // Set the distance per pulse for the drive encoder. We can simply use the
     // distance traveled for one rotation of the wheel divided by the encoder
@@ -97,7 +101,7 @@ public class SwerveModule {
    */
   public SwerveModulePosition getPosition() {
     return new SwerveModulePosition(
-        m_driveEncoder.getDistance(), new Rotation2d(m_turningEncoder.getDistance()));
+        (m_driveEncoder).getDistance(), new Rotation2d(m_turningEncoder.getDistance()));
   }
 
   /**
